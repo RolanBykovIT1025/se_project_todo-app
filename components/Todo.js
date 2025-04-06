@@ -8,11 +8,11 @@ class Todo {
 
   _setEventListeners() {
     this._todoDeleteBtn.addEventListener("click", () => {
-        this._element.remove();
+      this._todoElement.remove();
     });
 
     this._todoCheckboxEl.addEventListener("change", () => {
-        this._data.completed = !this.data.completed;
+        this._data.completed = !this._data.completed;
         console.log(this._data.completed);
     });
   }
@@ -30,21 +30,27 @@ class Todo {
       .querySelector(".todo")
       .cloneNode(true);
 
-      this._element = this._todoElement;
+    this._todoNameEl = this._todoElement.querySelector(".todo__name");
+    this._todoCheckboxEl = this._todoElement.querySelector(".todo__completed");
+    this._todoLabel = this._todoElement.querySelector(".todo__label");
+    this._todoDate = this._todoElement.querySelector(".todo__date");
+    this._todoDeleteBtn = this._todoElement.querySelector(".todo__delete-btn");
 
-    const todoNameEl = this._todoElement.querySelector(".todo__name");
-    const todoDate = this._todoElement.querySelector(".todo__date");
-    const todoDeleteBtn = this._todoElement.querySelector(".todo__delete-btn");
-    this._todoDeleteBtn = todoDeleteBtn;
-    const date = new Date(this._data.date);
-    todoNameEl.textContent = this._data.name;
-    todoDate.textContent = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+    this._todoNameEl.textContent = this._data.name;
 
-    this._generateCheckboxEl();
-    this._setEventListeners();
-    
-    return this._todoElement;
+    this._data.date = new Date(this._data.date);
+
+    if (isNaN(this._data.date.getTime())) {
+      this._todoDate.textContent = "";
+  } else {
+      this._todoDate.textContent = `${this._data.date.getMonth() + 1}/${this._data.date.getDate()}/${this._data.date.getFullYear()}`;
   }
+
+  this._generateCheckboxEl()
+  this._setEventListeners()
+
+  return this._todoElement;
+  }  
 }
 
 export default Todo;
