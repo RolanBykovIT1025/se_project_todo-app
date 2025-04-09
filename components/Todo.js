@@ -1,20 +1,32 @@
 class Todo {
-  constructor(data, selector) {
-    console.log(data);
-    console.log(selector);
+  constructor(data, templateSelector, handleCheck, handleDelete) {
+    this._text = data.text;
+    this._completed = data.completed || false;
+    this._templateSelector = templateSelector;
+    this._handleCheck = handleCheck;
+    this._handleDelete = handleDelete;
     this._data = data;
-    this._templateElement = document.querySelector(selector);
   }
 
   _setEventListeners() {
-    this._todoDeleteBtn.addEventListener("click", () => {
-      this._todoElement.remove();
-    });
+    this._todoElement
+      .querySelector(".todo__delete-btn")
+      .addEventListener("click", () => {
+        this._handleDelete(this);
+      });
 
-    this._todoCheckboxEl.addEventListener("change", () => {
-        this._data.completed = !this._data.completed;
-        console.log(this._data.completed);
-    });
+    this._todoElement
+      .querySelector(".todo__completed")
+      .addEventListener("change", () => {
+        this._toggleCompletion();
+        this._handleCheck(this);
+      });
+  }
+
+  _toggleCompletion() {
+    this._completed = !this._completed;
+    this._todoElement.querySelector(".todo__completed").checked =
+      this._completed;
   }
 
   _generateCheckboxEl() {
@@ -26,6 +38,7 @@ class Todo {
   }
 
   getView() {
+    this._templateElement = document.querySelector(this._templateSelector);
     this._todoElement = this._templateElement.content
       .querySelector(".todo")
       .cloneNode(true);
@@ -42,15 +55,17 @@ class Todo {
 
     if (isNaN(this._data.date.getTime())) {
       this._todoDate.textContent = "";
-  } else {
-      this._todoDate.textContent = `${this._data.date.getMonth() + 1}/${this._data.date.getDate()}/${this._data.date.getFullYear()}`;
+    } else {
+      this._todoDate.textContent = `${
+        this._data.date.getMonth() + 1
+      }/${this._data.date.getDate()}/${this._data.date.getFullYear()}`;
+    }
+
+    this._generateCheckboxEl();
+    this._setEventListeners(); // Moved this line here
+
+    return this._todoElement;
   }
-
-  this._generateCheckboxEl()
-  this._setEventListeners()
-
-  return this._todoElement;
-  }  
 }
 
 export default Todo;
