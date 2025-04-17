@@ -1,70 +1,75 @@
 class Todo {
   constructor(data, templateSelector, handleCheck, handleDelete) {
-    this._text = data.text;
-    this._completed = data.completed || false;
-    this._templateSelector = templateSelector;
-    this._handleCheck = handleCheck;
-    this._handleDelete = handleDelete;
-    this._data = data;
+    this.name = data.name;
+    this.completed = data.completed || false;
+    this.templateSelector = templateSelector;
+    this.handleCheck = handleCheck;
+    this.handleDelete = handleDelete;
+    this.data = data;
   }
 
-  _setEventListeners() {
-    this._todoElement
+  setEventListeners() {
+    this.todoElement
       .querySelector(".todo__delete-btn")
       .addEventListener("click", () => {
-        this._handleDelete(this);
+        this.handleDelete(this);
       });
 
-    this._todoElement
+    this.todoElement
       .querySelector(".todo__completed")
       .addEventListener("change", () => {
         this._toggleCompletion();
-        this._handleCheck(this);
+        this.handleCheck(this);
       });
   }
 
   _toggleCompletion() {
-    this._completed = !this._completed;
-    this._todoElement.querySelector(".todo__completed").checked =
-      this._completed;
+    this.completed = !this.completed;
+    this.todoElement.querySelector(".todo__completed").checked =
+      this.completed;
   }
 
   _generateCheckboxEl() {
-    this._todoCheckboxEl = this._todoElement.querySelector(".todo__completed");
-    this._todoLabel = this._todoElement.querySelector(".todo__label");
-    this._todoCheckboxEl.checked = this._data.completed;
-    this._todoCheckboxEl.id = `todo-${this._data.id}`;
-    this._todoLabel.setAttribute("for", `todo-${this._data.id}`);
+    this._todoCheckboxEl = this.todoElement.querySelector(".todo__completed");
+    this._todoLabel = this.todoElement.querySelector(".todo__label");
+    this._todoCheckboxEl.checked = this.data.completed;
+    this._todoCheckboxEl.id = `todo-${this.data.id}`;
+    this._todoLabel.setAttribute("for", `todo-${this.data.id}`);
   }
 
   getView() {
-    this._templateElement = document.querySelector(this._templateSelector);
-    this._todoElement = this._templateElement.content
+    this.templateElement = document.querySelector(this.templateSelector);
+    if (!this.templateElement) {
+      console.error(`Template with selector ${this.templateSelector} not found`);
+      return null;
+  }
+ 
+    this.todoElement = this.templateElement.content
       .querySelector(".todo")
       .cloneNode(true);
 
-    this._todoNameEl = this._todoElement.querySelector(".todo__name");
-    this._todoCheckboxEl = this._todoElement.querySelector(".todo__completed");
-    this._todoLabel = this._todoElement.querySelector(".todo__label");
-    this._todoDate = this._todoElement.querySelector(".todo__date");
-    this._todoDeleteBtn = this._todoElement.querySelector(".todo__delete-btn");
+    this._todoNameEl = this.todoElement.querySelector(".todo__name");
+    this._todoCheckboxEl = this.todoElement.querySelector(".todo__completed");
+    this._todoLabel = this.todoElement.querySelector(".todo__label");
+    this._todoDate = this.todoElement.querySelector(".todo__date");
+    this._todoDeleteBtn = this.todoElement.querySelector(".todo__delete-btn");
 
-    this._todoNameEl.textContent = this._data.name;
+    this._todoNameEl.textContent = this.data.name;
 
-    this._data.date = new Date(this._data.date);
+    this.data.date = new Date(this.data.date);
 
-    if (isNaN(this._data.date.getTime())) {
+    if (isNaN(this.data.date.getTime())) {
       this._todoDate.textContent = "";
     } else {
       this._todoDate.textContent = `${
-        this._data.date.getMonth() + 1
-      }/${this._data.date.getDate()}/${this._data.date.getFullYear()}`;
+        this.data.date.getMonth() + 1
+      }/${this.data.date.getDate()}/${this.data.date.getFullYear()}`;
     }
 
     this._generateCheckboxEl();
-    this._setEventListeners(); // Moved this line here
+    this.setEventListeners();
 
-    return this._todoElement;
+    return this.todoElement;
   }
 }
 

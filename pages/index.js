@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "https://jspm.dev/uuid";
 
 import { initialTodos, validationConfig } from "../utils/constants.js";
+console.log("Initial Todos:", initialTodos);
 
 import Todo from "../components/Todo.js";
 import TodoCounter from "../components/TodoCounter.js";
@@ -17,14 +18,6 @@ const todosList = document.querySelector(".todos__list");
 
 const todoCounter = new TodoCounter(initialTodos, ".counter__text");
 
-const section = new Section({
-  items: [],
-  renderer: (item) => {
-    return generateTodo(item);
-  },
-  containerSelector: ".todos__list"
-});
-
 const addTodoPopup = new PopupWithForm({
   popupSelector: "#add-todo-popup",
   handleFormSubmit: (values) => {
@@ -39,6 +32,7 @@ const addTodoPopup = new PopupWithForm({
       };
       section.addItem(todoData);
       addTodoPopup.close();
+      todoCounter.updateTotal(true);
   }
 });
 addTodoPopup.setEventListeners();
@@ -53,21 +47,23 @@ addTodoPopup.setEventListeners();
 
 function handleEscapeClose(evt) {
   if (evt.key === "Escape") {
-    //find the currently opened modal
+    // find the currently opened modal
     // and close it
   }
 }
 
 function handleDelete(todoInstance) {
-  if (todoInstance._completed) {
+  if (todoInstance.completed) {
       todoCounter.updateCompleted(false);
   }
+
+  todoCounter.updateTotal(false);
   
-  todoInstance._todoElement.remove();
+  todoInstance.todoElement.remove();
 }
 
 function handleCheck(todoInstance) {
-  todoCounter.updateCompleted(todoInstance._completed);
+  todoCounter.updateCompleted(todoInstance.completed);
 }
 
 const generateTodo = (data) => {
@@ -79,6 +75,16 @@ const generateTodo = (data) => {
 addTodoButton.addEventListener("click", () => {
   addTodoPopup.open();
 });
+
+const section = new Section({
+  items: initialTodos,
+  renderer: (item) => {
+    return generateTodo(item);
+  },
+  containerSelector: ".todos__list"
+});
+
+section.renderItems();
 
 // addTodoCloseBtn.addEventListener("click", () => {
 //   addTodoPopup.close();
